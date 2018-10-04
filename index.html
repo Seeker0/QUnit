@@ -3,67 +3,75 @@
 <head>
   <meta charset="utf-8" />
 
-  <title>Mangled date examples</title>
+  <title>Refactored date examples</title>
 
-  <script src="prettyDate.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.6.2.css" />
+
+  <script src="https://code.jquery.com/qunit/qunit-2.6.2.js"></script>
+  <script src="prettyDate2.js"></script>
 
   <script>
-    function test(then, expected) {
-      results.total++;
-      var result = prettyDate("2008/01/28 22:25:00", then);
-      if(result !== expected) {
-        results.bad++;
-        console.log("Expected " + expected + ", but was " + result);
+    QUnit.test("prettyDate.format", function(assert) {
+      function date(then, expected) {
+        assert.equal(prettyDate.format("2008/01/28 22:25:00", then), expected);
       }
+      date("2008/01/28 22:24:30", "just now");
+      date("2008/01/28 22:23:30", "1 minute ago");
+      date("2008/01/28 21:23:30", "1 hour ago");
+      date("2008/01/27 22:23:30", "Yesterday");
+      date("2008/01/26 22:23:30", "2 days ago");
+      date("2007/01/26 22:23:30", undefined);
+    });
+
+    function domtest(name, now, first, second) {
+      QUnit.test(name, function(assert) {
+        var links = document.getElementById("qunit-fixture").getElementsByTagName("a");
+
+        assert.equal(links[0].innerHTML, "January 28th, 2008");
+        assert.equal(links[2].innerHTML, "January 27th, 2008");
+        prettyDate.update(now);
+        assert.equal(links[0].innerHTML, first);
+        assert.equal(links[2].innerHTML, second);
+      });
     }
 
-    var results = {
-      total: 0,
-      bad: 0
-    };
+    domtest("prettyDate.update", "2008-01-28T22:25:00Z", "2 hours ago", "Yesterday");
 
-    test("2008/01/28 22:24:30", "just now");
-    test("2008/01/28 22:23:30", "1 minute ago");
-    test("2008/01/28 21:23:30", "1 hour ago");
-    test("2008/01/27 22:23:30", "Yesterday");
-    test("2008/01/26 22:23:30", "2 days ago");
-    test("2007/01/26 22:23:30", undefined);
-    console.log("Of " + results.total + " tests, " +
-      results.bad + " failed, " +
-      (results.total - results.bad) + " passed.");
+    domtest("prettyDate.update, one day later", "2008/01/29 22:25:00", "Yesterday", "2 days ago");
   </script>
 
-  <script>
-    window.onload = function() {
-      var links = document.getElementsByTagName("a");
 
-      for (var i = 0; i < links.length; i++) {
-        if( links[i].title){
-          var date = prettyDate("2008-01-28T22:25:00Z", links[i].title);
-          if(date) {
-            links[i].innerHTML = date;
-          }
-        }
-      }
-    };
-  </script>
 </head>
 <body>
 
-  <ul>
-    <li class="entry">
-      <p>
-        blah blah blah...
-      </p>
-      <small class="extra">
-        Posted <span class="time">
-          <a href="#2008/01/blah/57/" title="2008-01-28T20:24:17Z">
-            <span>January 28th, 2008</span>
-          </a>
-        </span>
-        by <span class="author"><a href="#john/">John Resig</a></span>
-      </small>
-    </li>
-  </ul>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+
+    <ul>
+      <li class="entry">
+        <p>
+          blah blah blah...
+        </p>
+        <small class="extra">
+          Posted <span class="time">
+            <a href="#2008/01/blah/57/" title="2008-01-28T20:24:17Z">January 28th, 2008</a>
+          </span>
+          by <span class="author"><a href="#john/">John Resig</a></span>
+        </small>
+      </li>
+      <li class="entry">
+        <p>
+          blah blah blah...
+        </p>
+        <small class="extra">
+          Posted <span class="time">
+            <a href="#2008/01/blah/57/" title="2008-01-27T22:24:17Z">January 27th, 2008</a>
+          </span>
+          by <span class="author"><a href+"#john/">John Resig</a></span>
+        </small>
+      </li>
+    </ul>
+  </div>
+
 </body>
 </html>
