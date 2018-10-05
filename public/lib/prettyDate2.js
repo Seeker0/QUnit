@@ -1,6 +1,8 @@
-var prettyDate = {
-  format: function(now, time) {
-    var date = new Date(time || ""),
+"use strict";
+
+const prettyDate = {
+  format: (now, time) => {
+    const date = new Date(time || ""),
       diff = (new Date(now).getTime() - date.getTime()) / 1000,
       day_diff = Math.floor(diff / 86400);
 
@@ -19,10 +21,10 @@ var prettyDate = {
     );
   },
 
-  update: function(now) {
-    var links = document.getElementsByTagName("a");
+  update: now => {
+    let links = document.getElementsByTagName("a");
 
-    for (var i = 0; i < links.length; i++) {
+    for (let i = 0; i < links.length; i++) {
       if (links[i].title) {
         var date = prettyDate.format(now, links[i].title);
         if (date) {
@@ -32,3 +34,5 @@ var prettyDate = {
     }
   }
 };
+
+module.exports = prettyDate;
